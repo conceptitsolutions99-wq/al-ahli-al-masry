@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /al-ahli-al-masry/admin/
+
+Sitemap: https://conceptitsolutions99-wq.github.io/al-ahli-al-masry/sitemap.xml
