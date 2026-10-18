@@ -4,8 +4,9 @@
 (function () {
   'use strict';
 
-  var WA_NUMBER = '201111035345';
-  var MAIL = 'info@alahlymisr.net';
+  /* قد تُحدَّث من لوحة التحكم عبر طبقة المحتوى */
+  function waNumber() { return (window.AH_RUNTIME && window.AH_RUNTIME.wa) || '201111035345'; }
+  function mailAddr() { return (window.AH_RUNTIME && window.AH_RUNTIME.mail) || 'info@alahlymisr.net'; }
 
   /* ---------- الهيدر وزر العودة للأعلى ---------- */
   var header = document.getElementById('header');
@@ -61,17 +62,18 @@
   }
 
   /* ---------- تمرير سلس مع مراعاة ارتفاع الهيدر ---------- */
-  document.querySelectorAll('a[href^="#"]').forEach(function (link) {
-    link.addEventListener('click', function (e) {
-      var id = link.getAttribute('href');
-      if (!id || id === '#') return;
-      var target = document.querySelector(id);
-      if (!target) return;
-      e.preventDefault();
-      var top = target.getBoundingClientRect().top + window.scrollY - 92;
-      window.scrollTo({ top: top, behavior: 'smooth' });
-      history.replaceState(null, '', id);
-    });
+  /* تفويض على المستند ليعمل مع الروابط المُعاد رسمها من طبقة المحتوى */
+  document.addEventListener('click', function (e) {
+    var link = e.target && e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!link) return;
+    var id = link.getAttribute('href');
+    if (!id || id === '#') return;
+    var target = document.querySelector(id);
+    if (!target) return;
+    e.preventDefault();
+    var top = target.getBoundingClientRect().top + window.scrollY - 92;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+    history.replaceState(null, '', id);
   });
 
   /* ---------- إبراز الرابط النشط ---------- */
@@ -93,9 +95,9 @@
   }
 
   /* ---------- ظهور العناصر عند التمرير ---------- */
-  var revealEls = document.querySelectorAll('[data-reveal]');
+  var revealObs = null;
   if ('IntersectionObserver' in window) {
-    var revealObs = new IntersectionObserver(function (entries, obs) {
+    revealObs = new IntersectionObserver(function (entries, obs) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
           entry.target.classList.add('is-visible');
@@ -103,13 +105,19 @@
         }
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-    revealEls.forEach(function (el) { revealObs.observe(el); });
-  } else {
-    revealEls.forEach(function (el) { el.classList.add('is-visible'); });
   }
 
+  function setupReveals() {
+    document.querySelectorAll('[data-reveal]').forEach(function (el) {
+      if (el.__revealObserved) return;
+      el.__revealObserved = true;
+      if (revealObs) revealObs.observe(el);
+      else el.classList.add('is-visible');
+    });
+  }
+  setupReveals();
+
   /* ---------- عدّاد الأرقام ---------- */
-  var counters = document.querySelectorAll('[data-count]');
   function animateCount(el) {
     var target = parseInt(el.getAttribute('data-count'), 10);
     var suffix = el.getAttribute('data-suffix') || '';
@@ -127,8 +135,9 @@
     requestAnimationFrame(step);
   }
 
+  var countObs = null;
   if ('IntersectionObserver' in window) {
-    var countObs = new IntersectionObserver(function (entries, obs) {
+    countObs = new IntersectionObserver(function (entries, obs) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
           animateCount(entry.target);
@@ -136,8 +145,22 @@
         }
       });
     }, { threshold: 0.5 });
-    counters.forEach(function (el) { countObs.observe(el); });
   }
+
+  function setupCounters() {
+    document.querySelectorAll('[data-count]').forEach(function (el) {
+      if (el.__countObserved) return;
+      el.__countObserved = true;
+      if (countObs) countObs.observe(el);
+    });
+  }
+  setupCounters();
+
+  /* إعادة ربط الرسّامات بعد إعادة رسم طبقة المحتوى */
+  document.addEventListener('ah:content-applied', function () {
+    setupReveals();
+    setupCounters();
+  });
 
   /* ---------- نموذج التواصل ---------- */
   var form = document.getElementById('leadForm');
@@ -200,7 +223,7 @@
     if (btnWa) {
       btnWa.addEventListener('click', function () {
         if (!validate()) { setNote('من فضلك أكمل الحقول المطلوبة بشكل صحيح.', 'error'); return; }
-        var url = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(buildText(collect()));
+        var url = 'https://wa.me/' + waNumber() + '?text=' + encodeURIComponent(buildText(collect()));
         window.open(url, '_blank', 'noopener');
         setNote('تم فتح واتساب لإرسال طلبك — شكرًا لتواصلك معنا.', 'success');
       });
@@ -211,7 +234,7 @@
         if (!validate()) { setNote('من فضلك أكمل الحقول المطلوبة بشكل صحيح.', 'error'); return; }
         var v = collect();
         var subject = 'طلب استشارة عقارية من ' + v.name;
-        var url = 'mailto:' + MAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(buildText(v));
+        var url = 'mailto:' + mailAddr() + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(buildText(v));
         window.location.href = url;
         setNote('تم تجهيز رسالتك في تطبيق البريد الإلكتروني.', 'success');
       });

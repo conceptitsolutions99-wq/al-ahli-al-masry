@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>لوحة التحكم — الأهلي مصر لإدارة الأصول العقارية</title>
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- ========== شاشة تسجيل الدخول ========== -->
+<div class="auth" id="loginView">
+  <div class="auth__card">
+    <img src="../assets/logo.png" alt="شعار الأهلي مصر" class="auth__logo" width="180" height="94">
+    <h1>لوحة التحكم</h1>
+    <p class="auth__sub">سجّل الدخول لتعديل محتوى الموقع</p>
+    <form id="loginForm" novalidate>
+      <label class="field">
+        <span>البريد الإلكتروني</span>
+        <input type="email" id="loginEmail" required autocomplete="username" placeholder="info@alahlymisr.net" dir="ltr">
+      </label>
+      <label class="field">
+        <span>كلمة المرور</span>
+        <input type="password" id="loginPass" required autocomplete="current-password" placeholder="••••••••" dir="ltr">
+      </label>
+      <button class="btn btn--primary" type="submit" id="loginBtn">دخول</button>
+      <p class="auth__note" id="loginNote" role="alert"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ========== واجهة المحرر ========== -->
+<div class="app" id="editorView" hidden>
+  <header class="topbar">
+    <div class="topbar__brand">
+      <img src="../assets/logo.png" alt="" width="110" height="57">
+      <b>لوحة التحكم</b>
+    </div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--sm" href="../" target="_blank" rel="noopener">عرض الموقع ↗</a>
+      <button class="btn btn--ghost btn--sm" type="button" id="pwBtn">تغيير كلمة المرور</button>
+      <button class="btn btn--ghost btn--sm" type="button" id="logoutBtn">خروج</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav id="sectionNav" aria-label="أقسام المحتوى"></nav>
+    </aside>
+
+    <main class="panel">
+      <h2 id="sectionTitle"></h2>
+      <p class="panel__desc" id="sectionDesc"></p>
+      <div id="sectionFields"></div>
+    </main>
+  </div>
+
+  <footer class="savebar">
+    <button class="btn btn--primary" type="button" id="saveBtn">حفظ التعديلات</button>
+    <span class="savebar__status" id="saveStatus"></span>
+    <span class="savebar__meta" id="lastSaved"></span>
+  </footer>
+</div>
+
+<!-- ========== نافذة تغيير كلمة المرور ========== -->
+<div class="modal" id="pwModal" hidden>
+  <div class="modal__card">
+    <h3>تغيير كلمة المرور</h3>
+    <form id="pwForm" novalidate>
+      <label class="field">
+        <span>كلمة المرور الجديدة</span>
+        <input type="password" id="pwNew" required minlength="8" autocomplete="new-password" dir="ltr">
+      </label>
+      <label class="field">
+        <span>تأكيد كلمة المرور</span>
+        <input type="password" id="pwConfirm" required minlength="8" autocomplete="new-password" dir="ltr">
+      </label>
+      <div class="modal__actions">
+        <button class="btn btn--primary" type="submit">حفظ</button>
+        <button class="btn btn--ghost" type="button" id="pwCancel">إلغاء</button>
+      </div>
+      <p class="auth__note" id="pwNote" role="alert"></p>
+    </form>
+  </div>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>
